@@ -1,25 +1,43 @@
-# UC Question Sprint - Dhiaan
+# UC Admissions Data Challenge 2026 - Submission
 
-**Live dashboard:** https://uc-admissions-datathon-dhiaan.streamlit.app/
+**Team:** the-X-alien (Dhiaan Dave)
+**Live app:** https://uc-admissions-datathon-dhiaan.streamlit.app/
 
-Ten numeric questions from the UC Admissions Data Challenge question sprint, answered with pandas in Google Colab.
+## The question
+For California public high schools in 2022-2024, which school type most outperforms its expected UC freshman admit rate, after controlling for poverty, applicant GPA, and school size?
 
-## Questions and answers
-1. In fall 2025, how many UC campuses did the average applicant apply to? **5.74**
-2. Fall 2025 UCLA admit rate for applicants from CA public high schools. **8.29%**
-3. Fall 2025 campus where Computer Science costs the most admit rate vs its own overall rate. **Davis**
-4. IQR of admit GPA for Berkeley Computer Science in fall 2025. **0.02**
-5. In fall 2025, how many of the 9 UC campuses had White freshman admit rate higher than Hispanic/Latino(a)? **9**
-6. Systemwide fall 2025, higher freshman admit rate: White or Hispanic/Latino(a)? **Hispanic/Latino(a)**
-7. Of Bay Area high school graduates in class of 2023, share enrolled at a CA Community College within 12 months. **34.04%**
-8. Mission San Jose High School fall 2023, share of a-g completers who applied to UC. **99.06%**
-9. Distinct CA public high schools that sent at least one freshman applicant to UC in fall 2025. **193**
-10. Of five listed schools, which most outperforms its expected Berkeley admit rate 2022-2025 (controls for a-g completion, poverty, applicant GPA, school size)? **MISSION SENIOR HIGH SCHOOL**
+## The finding
+**Continuation High Schools** beat their expected admit rate by **+21.5 percentage points** (2022-2024) - the largest over-performance of any public school type. Regular public high schools barely beat expectation (+1.7pp).
 
-## Method
-Each question was solved with a single pandas block. The event CSVs were used directly (no external stats): `bay_area_modeling_table.csv` for applicant counts, CCC enrollment, and school-level outcomes; `dashboard_data.csv` for campus and school residual rates; `uc_admissions_summary_by_ethnicity.csv` for ethnicity admit rates; `uc_freshman_admission_by_discipline.csv` for CS vs overall discipline rates; `uc_transfer_admission_by_major.csv` for Berkeley CS GPA bands. Every answer was cross-checked with a second method (SQL) and the two agreed.
+School type | Beats expectation by
+--- | ---
+Continuation High Schools | +21.5pp
+Alternative Schools of Choice | +9.0pp
+K-12 Schools (Public) | +3.9pp
+High Schools (Public) | +1.7pp
+High Schools in 1 District | +0.6pp
+
+## How we got there (methodology)
+- **Metric:** `admit_rate_residual` (pp), the gap between a school's actual and predicted admit rate. Precomputed by the organizers; larger = more over-performance.
+- **Aggregation:** we sum applicant and admit counts per school type, then divide (never average percentages - that biases toward small schools).
+- **Universitywide is not a campus sum:** reported separately to avoid a classic aggregation error.
+- **Context, not headline:** the crowded finding (CS lowers UC odds, Davis harshest) is shown as background so we don't duplicate what every team shows.
+- **Poverty does not explain it:** FRPM% vs residual correlation is near zero - the gap holds after poverty is controlled.
+- **Reproducible:** every number traces to `dashboard_notebook.ipynb` on the cleaned data.
+
+## The dashboard
+A Streamlit app with: Overview (KPI cards + school-type bar), School Map (green = beats, red = below, filterable by type), Top Schools ranking, Deep Analysis (county over-performance + FRPM-vs-residual), and an AI Lab (Gemini validates and stress-tests the finding; it never fabricates it).
+
+## Run it locally
+```
+pip install -r requirements.txt
+streamlit run app.py
+```
 
 ## Files
-- `sprint_notebook.ipynb` - Colab notebook, one cell per question, prints each answer
-- `sprint_formulas.txt` - plain explanation of each formula
-- `Data/` - source datasets from the event Google Drive
+- `app.py` - the dashboard
+- `requirements.txt` - dependencies (streamlit, pandas, numpy, plotly)
+- `cleaned_data/` - cleaned source CSVs
+- `dashboard_notebook.ipynb` - the methodology notebook (reproducible numbers)
+- `UC-FINAL-PRESENTATION.pptx` - the final A+ presentation (rubric: Question, Finding, Rigor, Dashboard, Presentation)
+- `README.md` - this file
